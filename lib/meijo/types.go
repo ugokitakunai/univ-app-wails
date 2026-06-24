@@ -2,6 +2,7 @@ package meijo
 
 import "github.com/go-resty/resty/v2"
 
+// Campusmate
 type ScheduleEntry interface {
 	ClassName() string
 	Code() string
@@ -20,6 +21,11 @@ type classEntry struct {
 	period     int
 }
 
-type Campusmate struct {
-	client *resty.Client
+type MeijoClient struct {
+	Client *resty.Client
+}
+
+// openam
+type AuthResult struct {
+    TokenId string `json:"tokenId"`
 }

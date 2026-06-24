@@ -4,15 +4,7 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-type AuthResult struct {
-    TokenId string `json:"tokenId"`
-}
-
-type OpenAMClient struct {
-    client *resty.Client
-}
-
-func (o *OpenAMClient) GetToken(userId string, password string) (string, error) {
+func (o *MeijoClient) GetToken(userId string, password string) (string, error) {
 	authUrl := "https://slbsso.meijo-u.ac.jp/opensso/json/authenticate"
 
 	r := resty.New()

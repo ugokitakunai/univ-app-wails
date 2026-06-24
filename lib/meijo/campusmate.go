@@ -9,11 +9,6 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-func NewCampusmateClient() *Campusmate {
-	return &Campusmate{
-		client: resty.New(),
-	}
-}
 
 func (e classEntry) ClassName() string  { return e.className }
 func (e classEntry) Code() string       { return e.code }
@@ -23,13 +18,13 @@ func (e classEntry) Weekday() string    { return e.weekday }
 func (e classEntry) Period() int        { return e.period }
 
 
-func (c *Campusmate) SignIn(token string) error{
+func (c *MeijoClient) CampusmateSignIn(token string) error{
 	authUrl := "https://rpgkmportal.meijo-u.ac.jp/camweb/hlogin.do"
 
-	c.client.SetHeader("User-Agent", "Mozilla/5.0")
-	c.client.SetHeader("Cookie", "iPlanetDirectoryPro=" + token)
-	c.client.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
-	_, err := c.client.R().Get(authUrl)
+	c.Client.SetHeader("User-Agent", "Mozilla/5.0")
+	c.Client.SetHeader("Cookie", "iPlanetDirectoryPro=" + token)
+	c.Client.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
+	_, err := c.Client.R().Get(authUrl)
 
 	if err != nil {
 		return err
@@ -37,10 +32,10 @@ func (c *Campusmate) SignIn(token string) error{
 	return nil
 }
 
-func (c *Campusmate) GetSchedule() ([]ScheduleEntry,  error) {
+func (c *MeijoClient) GetSchedule() ([]ScheduleEntry,  error) {
 	portalUrl := "https://rpgkmportal.meijo-u.ac.jp/camweb/prtlmjkr.do"
-	c.client.SetHeader("User-Agent", "Mozilla/5.0")
-	res, err := c.client.R().Get(portalUrl)
+	c.Client.SetHeader("User-Agent", "Mozilla/5.0")
+	res, err := c.Client.R().Get(portalUrl)
 
 	if err != nil {
 		return nil, err

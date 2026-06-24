@@ -9,17 +9,11 @@ import (
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
+//go:embed all:frontend/dist
 var assets embed.FS
-var GlobalState *AppState
 
-type AppState struct {
-	app *application.App
-	campusmateClient *meijo.Campusmate
-	openAMClient *meijo.OpenAMClient
-}
 
 func init() {
-	application.RegisterEvent[string]("time")
 }
 
 func main() {
@@ -27,7 +21,7 @@ func main() {
 		Name:        "react-app",
 		Description: "A demo of using raw HTML & CSS",
 		Services: []application.Service{
-			application.NewService(&meijo.OpenAMClient{}),
+			application.NewService(&meijo.Service{}),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
@@ -38,7 +32,7 @@ func main() {
 	})
 
 	app.Window.NewWithOptions(application.WebviewWindowOptions{
-		Title: "Window 1",
+		Title: "Univ",
 		Width:  1000,
 		Height: 618,
 		Mac: application.MacWindow{
