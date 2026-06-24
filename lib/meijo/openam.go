@@ -1,6 +1,8 @@
 package meijo
 
 import (
+	"changeme/lib/storage"
+
 	"github.com/go-resty/resty/v2"
 )
 
@@ -27,14 +29,22 @@ func (o *MeijoClient) GetToken(userId string, password string) (string, error) {
 
     var res2 AuthResult
 
-    println(res.String())
-
     res, err = r.R().SetBody(&result).SetResult(&res2).Post(authUrl)
     if err != nil {
         return "", err
     }
 
-    println(res.String())
+    s, err := storage.NewStorage()
+    if err == nil {
+        func() {
+            if _, err := s.StoreEncryptedStorage("OpenAMId", userId); err != nil {
+                return
+            }
+            if _, err := s.StoreEncryptedStorage("OpenAMPassword", password); err != nil {
+                return
+            }
+        }()
+    }
 
 	return res2.TokenId, nil
 }

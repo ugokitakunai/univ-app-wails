@@ -2,6 +2,7 @@ export function Button(props: {
   onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   className?: string;
   value?: string;
+  disabled?: boolean;
 }) {
   return (
     <div className={props.className}>
@@ -11,6 +12,7 @@ export function Button(props: {
           e.preventDefault();
           props.onClick(e);
         }}
+        disabled={props.disabled}
       >
         {props.value && <div>{props.value}</div>}
       </button>
