@@ -21,11 +21,7 @@ func init() {
 	application.RegisterEvent[bool]("isLoggedIn")
 }
 
-func initialize() {
-	state.AppState.SetOpenAMToken("dummy_token")
-	state.AppState.SetOpenAMUserId("dummy_user")
-	state.AppState.SetOpenAMPassword("dummy_password")
-	
+func initialize() {	
 	s, err := storage.NewStorage()
 	if err != nil {
 		log.Fatalf("Failed to initialize storage: %v", err)
