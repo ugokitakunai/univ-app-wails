@@ -2,6 +2,9 @@ package storage
 
 import (
 	"database/sql"
+	"encoding/base64"
+	"errors"
+	"log"
 
 	"github.com/danieljoos/wincred"
 	"github.com/fernet/fernet-go"
@@ -14,66 +17,76 @@ type Storage struct {
 	conn *sql.DB
 }
 
-func (s *Storage) ResetFernetKey() error {
-	fernetKey := generateFernetKey()
-
-	err := storeFernetKey(fernetKey.Encode())
+func NewStorage() (*Storage, error) {
+	conn, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
-		return err
+		return nil, err
+	}
+
+	s := &Storage{conn: conn}
+	if err := s.initDb(); err != nil {
+		conn.Close()
+		return nil, err
+	}
+
+	return s, nil
+}
+
+func (s *Storage) Close() error {
+	if s.conn != nil {
+		return s.conn.Close()
 	}
 	return nil
 }
 
-func (s *Storage) getFernetKey() (fernet.Key, error) {
+func (s *Storage) ResetFernetKey() error {
+	fernetKey := generateFernetKey()
+	return storeFernetKey(fernetKey)
+}
+
+func (s *Storage) getFernetKey() (string, error) {
 	cred, err := wincred.GetGenericCredential("univApp")
 	if err != nil {
-		panic(err)
+		newKey := generateFernetKey()
+		if err := storeFernetKey(newKey); err != nil {
+			return "", err
+		}
+		return newKey, nil
 	}
 
 	key := string(cred.CredentialBlob)
-	fernetKey, err := fernet.DecodeKey(key)
+	_, err = fernet.DecodeKey(key)
 	if err != nil {
-		return generateFernetKey(), err
+		newKey := generateFernetKey()
+		if err := storeFernetKey(newKey); err != nil {
+			return "", err
+		}
+		return newKey, nil
 	}
 
-	return *fernetKey, nil
+	return key, nil
 }
 
-func generateFernetKey() fernet.Key {
+func generateFernetKey() string {
 	fernetInstance := fernet.Key{}
-	err := fernetInstance.Generate()
-	if err != nil {
-		panic(err)
+	if err := fernetInstance.Generate(); err != nil {
+		log.Fatalf("Failed to generate key: %v", err)
 	}
-	return fernetInstance
+	return fernetInstance.Encode()
 }
 
 func storeFernetKey(key string) error {
 	cred := wincred.NewGenericCredential("univApp")
 	cred.CredentialBlob = []byte(key)
-	err := cred.Write()
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return cred.Write()
 }
 
-func (s *Storage) InitDb() (error) {
-	conn, err := sql.Open("sqlite3", dbPath)
-
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
-
+func (s *Storage) initDb() error {
 	createKeyValueTableQuery := `
 	CREATE TABLE IF NOT EXISTS user_data (
 		key TEXT PRIMARY KEY,
 		value TEXT NOT NULL
-	);
-	`
+	);`
 
 	createClassTableQuery := `
 	CREATE TABLE IF NOT EXISTS class_data (
@@ -84,34 +97,80 @@ func (s *Storage) InitDb() (error) {
 		class_day INTEGER NOT NULL,
 		class_room TEXT,
 		class_teacher TEXT
-	);
-	`
+	);`
 
-	_, err = conn.Exec(createKeyValueTableQuery)
-	if err != nil {
+	if _, err := s.conn.Exec(createKeyValueTableQuery); err != nil {
 		return err
 	}
-	_, err = conn.Exec(createClassTableQuery)
-	if err != nil {
+	if _, err := s.conn.Exec(createClassTableQuery); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (s *Storage) EncryptedStorage (key string, value string) (string, error) {
+func (s *Storage) StoreEncryptedStorage(key string, value string) (string, error) {
+	if s.conn == nil {
+		return "", errors.New("database connection is not initialized")
+	}
+
 	fernetKey, err := s.getFernetKey()
 	if err != nil {
 		return "", err
 	}
 
-	data, err := fernet.EncryptAndSign([]byte(value), fernetKey)
+	fernetInstance, err := fernet.DecodeKey(fernetKey)
+	if err != nil {
+		return "", err
+	}
+
+	data, err := fernet.EncryptAndSign([]byte(value), fernetInstance)
+	if err != nil {
+		return "", err
+	}
+
+	encodedData := base64.StdEncoding.EncodeToString(data)
 
 	query := `INSERT OR REPLACE INTO user_data (key, value) VALUES (?, ?)`
-	_, err = s.conn.Exec(query, key, value)
+	_, err = s.conn.Exec(query, key, encodedData)
 	if err != nil {
 		return "", err
 	}
 
 	return value, nil
+}
+
+func (s *Storage) GetEncryptedStorage(key string) (string, error) {
+	if s.conn == nil {
+		return "", errors.New("database connection is not initialized")
+	}
+	
+	fernetKey, err := s.getFernetKey()
+	if err != nil {
+		return "", err
+	}
+
+	fernetInstance, err := fernet.DecodeKey(fernetKey)
+	if err != nil {
+		return "", err
+	}
+
+	query := `SELECT value FROM user_data WHERE key = ?`
+	row := s.conn.QueryRow(query, key)
+	var encodedData string
+	if err := row.Scan(&encodedData); err != nil {
+		if err == sql.ErrNoRows {
+			return "", errors.New("no data found for the given key")
+		}
+		return "", err
+	}
+
+	data, err := base64.StdEncoding.DecodeString(encodedData)
+	if err != nil {
+		return "", err
+	}
+
+	decryptedData := fernet.VerifyAndDecrypt(data, 0, []*fernet.Key{fernetInstance})
+
+	return string(decryptedData), nil
 }
