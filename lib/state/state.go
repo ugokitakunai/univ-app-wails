@@ -1,13 +1,17 @@
 package state
 
-import "github.com/wailsapp/wails/v3/pkg/application"
+import (
+	"github.com/wailsapp/wails/v3/pkg/application"
+)
 
 type State struct {
 	OpenAMUserId   string
 	OpenAMPassword string
 	OpenAMToken    string
+	OpenAMTokenExpireTime int
 
 	app *application.App
+	isAppInitialized bool
 }
 
 // getters and setters for the state fields
@@ -35,12 +39,28 @@ func (s *State) SetOpenAMToken(token string) {
 	s.OpenAMToken = token
 }
 
+func (s *State) GetOpenAMTokenExpireTime() int {
+	return s.OpenAMTokenExpireTime
+}
+
+func (s *State) SetOpenAMTokenExpireTime(expireTime int) {
+	s.OpenAMTokenExpireTime = expireTime
+}
+
 func (s *State) SetApp(app *application.App) {
 	s.app = app
 }
 
 func (s *State) GetApp() *application.App {
 	return s.app
+}
+
+func (s *State) IsAppInitialized() bool {
+	return s.isAppInitialized
+}
+
+func (s *State) SetAppInitialized(initialized bool) {
+	s.isAppInitialized = initialized
 }
 
 var AppState = &State{}

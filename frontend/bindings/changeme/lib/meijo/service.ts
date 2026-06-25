@@ -5,8 +5,16 @@
 // @ts-ignore: Unused imports
 import { Call as $Call, CancellablePromise as $CancellablePromise } from "@wailsio/runtime";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
+import * as $models from "./models.js";
+
 export function CampusmateSignIn(): $CancellablePromise<void> {
     return $Call.ByID(2871869773);
+}
+
+export function GetSchedule(): $CancellablePromise<$models.ScheduleEntry[] | null> {
+    return $Call.ByID(4214853648);
 }
 
 export function OpenAMSignIn(userId: string, password: string): $CancellablePromise<string> {

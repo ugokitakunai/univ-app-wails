@@ -3,7 +3,10 @@ import { WML } from "@wailsio/runtime";
 import { OpenAMSignIn } from "../../bindings/changeme/lib/meijo/service";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
-import { GetOpenAMToken } from "../../bindings/changeme/lib/state/state";
+import {
+  GetOpenAMToken,
+  IsAppInitialized,
+} from "../../bindings/changeme/lib/state/state";
 
 function App() {
   let [userId, setUserId] = useState("");
@@ -30,17 +33,37 @@ function App() {
   }
 
   useEffect(() => {
-    setTimeout(async () => {
-      let token: string = await GetOpenAMToken();
-      if (token) {
-        window.location.href = "/#/home";
+    let timerId: number;
+
+    const checkApp = async () => {
+      if (await IsAppInitialized()) {
+        console.log("App is initialized, checking for OpenAM token...");
+        setShowSpinner(true);
+        const token = await GetOpenAMToken();
+
+        if (token !== "") {
+          window.location.href = "/#/home";
+        } else {
+          console.log("No OpenAM token found, staying on login page.");
+          setShowSpinner(false);
+        }
       } else {
         setShowSpinner(true);
+        timerId = setTimeout(checkApp, 100);
       }
-    }, 2000);
+    };
 
-    // Reload WML so it picks up the wml tags
+    checkApp().catch((err) => {
+      console.error("Error checking app initialization:", err);
+      setShowSpinner(false);
+      setError("アプリの初期化中にエラーが発生しました。");
+    });
+
     WML.Reload();
+
+    return () => {
+      if (timerId) clearTimeout(timerId);
+    };
   }, []);
 
   return (
@@ -50,7 +73,7 @@ function App() {
           <div className="absolute inset-0 bg-[url('/bg-desktop.jpg')] bg-cover bg-center"></div>
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/90 to-slate-950"></div>
         </div>
-        {!showSpinner && (
+        {showSpinner && (
           <>
             <div className="absolute inset-0 bg-black/50 z-10"></div>
             <div className="absolute inset-0 flex items-center justify-center z-10">

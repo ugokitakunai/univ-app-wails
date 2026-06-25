@@ -21,6 +21,10 @@ export function GetOpenAMToken(): $CancellablePromise<string> {
     return $Call.ByID(3990794231);
 }
 
+export function GetOpenAMTokenExpireTime(): $CancellablePromise<number> {
+    return $Call.ByID(2446327273);
+}
+
 /**
  * getters and setters for the state fields
  */
@@ -28,8 +32,16 @@ export function GetOpenAMUserId(): $CancellablePromise<string> {
     return $Call.ByID(3096996224);
 }
 
+export function IsAppInitialized(): $CancellablePromise<boolean> {
+    return $Call.ByID(653389443);
+}
+
 export function SetApp(app: application$0.App | null): $CancellablePromise<void> {
     return $Call.ByID(3151285663, app);
+}
+
+export function SetAppInitialized(initialized: boolean): $CancellablePromise<void> {
+    return $Call.ByID(2045650051, initialized);
 }
 
 export function SetOpenAMPassword(password: string): $CancellablePromise<void> {
@@ -38,6 +50,10 @@ export function SetOpenAMPassword(password: string): $CancellablePromise<void> {
 
 export function SetOpenAMToken(token: string): $CancellablePromise<void> {
     return $Call.ByID(3914778283, token);
+}
+
+export function SetOpenAMTokenExpireTime(expireTime: number): $CancellablePromise<void> {
+    return $Call.ByID(2528793093, expireTime);
 }
 
 export function SetOpenAMUserId(userId: string): $CancellablePromise<void> {

@@ -16,30 +16,36 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
-
 func init() {
 	application.RegisterEvent[bool]("isLoggedIn")
 }
 
 func initialize() {	
+	state.AppState.SetAppInitialized(false)
 	s, err := storage.NewStorage()
 	if err != nil {
 		log.Fatalf("Failed to initialize storage: %v", err)
 	}
 	defer s.Close()
 
+	Service := &meijo.Service{}
+
+
 	// check if OpenAM token is already stored
 	token, err := s.GetEncryptedStorage("OpenAMToken")
 	if err == nil && token != "" {
 		log.Println("OpenAM token found in storage, setting state")
 		state.AppState.SetOpenAMToken(token)
+		state.AppState.SetAppInitialized(true)
+		Service.CampusmateSignIn()
+		Service.GetSchedule()
+		
 		return
 	}
 
 	userId, _ := s.GetEncryptedStorage("OpenAMId")
 	password, _ := s.GetEncryptedStorage("OpenAMPassword")
 
-	Service := &meijo.Service{}
 
 	if userId != "" && password != "" {
 		token, err := Service.OpenAMSignIn(userId, password)
@@ -50,7 +56,8 @@ func initialize() {
 		state.AppState.SetOpenAMToken(token)
 		state.AppState.SetOpenAMUserId(userId)
 		state.AppState.SetOpenAMPassword(password)
-
+		state.AppState.SetOpenAMTokenExpireTime(int(time.Now().Unix() + 3600))
+		
 		// cache token to storage
 		if _, err := s.StoreEncryptedStorage("OpenAMToken", token); err != nil {
 			log.Printf("Failed to store OpenAM token: %v", err)
@@ -60,6 +67,8 @@ func initialize() {
 			log.Printf("Failed to store OpenAM token expire time: %v", err)
 		}
 	}
+
+	state.AppState.SetAppInitialized(true)
 }
 
 func main() {
@@ -104,8 +113,9 @@ func main() {
 			log.Println("User is logged in, emitting isLoggedIn event")
 			app.Event.Emit("isLoggedIn", true)
 		} else {
+			state.AppState.SetAppInitialized(true)
 			log.Println("User is logged out, emitting isLoggedIn event")
-			app.Event.Emit("isLoggedIn", false)
+			app.Event.Emit("isLoggedIn", true)
 		}
 	}()
 

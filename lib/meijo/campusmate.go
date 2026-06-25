@@ -1,7 +1,11 @@
 package meijo
 
 import (
+	"changeme/lib/state"
 	"fmt"
+	"log"
+	"net/http"
+	"net/url"
 	"regexp"
 	"strings"
 
@@ -18,17 +22,29 @@ func (e classEntry) Weekday() string    { return e.weekday }
 func (e classEntry) Period() int        { return e.period }
 
 
-func (c *MeijoClient) CampusmateSignIn(token string) error{
+func (c *MeijoClient) CampusmateSignIn() error{
 	authUrl := "https://rpgkmportal.meijo-u.ac.jp/camweb/hlogin.do"
-
 	c.Client.SetHeader("User-Agent", "Mozilla/5.0")
-	c.Client.SetHeader("Cookie", "iPlanetDirectoryPro=" + token)
-	c.Client.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
-	_, err := c.Client.R().Get(authUrl)
+	c.Client.SetHeader("Content-Type", "application/json")
+	log.Printf("Cookies in client: %+v", c.Client.Cookies)
+
+	c.Client.GetClient().Jar.SetCookies(&url.URL{Scheme: "https", Host: "rpgkmportal.meijo-u.ac.jp"}, []*http.Cookie{{
+		Name:  "iPlanetDirectoryPro",
+		Value: state.AppState.GetOpenAMToken(),
+	}})
+	c.Client.SetRedirectPolicy(resty.NoRedirectPolicy())
+	res, err := c.Client.R().Get(authUrl)
+	c.Client.SetRedirectPolicy(resty.FlexibleRedirectPolicy(20))
 
 	if err != nil {
-		return err
+		if res.StatusCode() == 302 {
+			log.Println("Campusmate sign-in successful, redirected to:", res.Header().Get("Location"))
+			return nil
+		} else {
+			return err
+		}
 	}
+
 	return nil
 }
 
@@ -38,8 +54,12 @@ func (c *MeijoClient) GetSchedule() ([]ScheduleEntry,  error) {
 	res, err := c.Client.R().Get(portalUrl)
 
 	if err != nil {
+		log.Println("Error fetching schedule:", err)
 		return nil, err
 	}
+
+	log.Println("Schedule response status:", res.Status())
+	log.Println("Schedule response body:", res.String())
 
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(res.String()))
 	if err != nil {
@@ -88,6 +108,8 @@ func (c *MeijoClient) GetSchedule() ([]ScheduleEntry,  error) {
 					weekday:    weekdays[cnt],
 					period:     j + 1,
 				}
+				// debug
+				log.Println("Found class:", entry.ClassName(), "Code:", entry.Code(), "Room:", entry.Room(), "Instructor:", entry.Instructor(), "Weekday:", entry.Weekday(), "Period:", entry.Period())
 
 				schedule = append(schedule, entry)
 			}
