@@ -109,6 +109,18 @@ func (s *Storage) initDb() error {
 	return nil
 }
 
+func (s *Storage) SqlExec(query string, args ...interface{}) (sql.Result, error) {
+	if s.conn == nil {
+		return nil, errors.New("database connection is not initialized")
+	}
+	res, err := s.conn.Exec(query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
 func (s *Storage) StoreEncryptedStorage(key string, value string) (string, error) {
 	if s.conn == nil {
 		return "", errors.New("database connection is not initialized")

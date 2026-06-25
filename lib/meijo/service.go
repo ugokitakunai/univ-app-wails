@@ -2,6 +2,7 @@ package meijo
 
 import (
 	"changeme/lib/state"
+	"changeme/lib/storage"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
@@ -43,6 +44,22 @@ func (s *Service) GetSchedule() ([]ScheduleEntry, error) {
 	return client.GetSchedule()
 }
 
+func (s *Service) SaveScheduleToStorage(schedule []ScheduleEntry) error {
+	st, err := storage.NewStorage()
+		if err != nil {
+			return err
+		}
+	defer st.Close()
+	for _, entry := range schedule {
+		log.Printf("Saving schedule entry: %+v", entry)
+		query := "INSERT OR REPLACE INTO class_data (class_name, class_code, class_time, class_day, class_room, class_teacher) VALUES (?, ?, ?, ?, ?, ?)"
+		_, err = st.SqlExec(query, entry.ClassName(), entry.Code(), entry.Period(), entry.Weekday(), entry.Room(), entry.Instructor())
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
 func (s *Service) OpenAMSignIn(userId string, password string) (string, error) {
 	token, err := client.GetToken(userId, password)
 	if err != nil {

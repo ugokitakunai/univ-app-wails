@@ -38,7 +38,15 @@ func initialize() {
 		state.AppState.SetOpenAMToken(token)
 		state.AppState.SetAppInitialized(true)
 		Service.CampusmateSignIn()
-		Service.GetSchedule()
+		schedule, err := Service.GetSchedule()
+		if err != nil {
+			log.Printf("Failed to get schedule: %v", err)
+		} else {
+			err = Service.SaveScheduleToStorage(schedule)
+			if err != nil {
+				log.Printf("Failed to save schedule to storage: %v", err)
+			}
+		}
 		
 		return
 	}
