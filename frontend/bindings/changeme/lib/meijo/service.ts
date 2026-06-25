@@ -17,6 +17,10 @@ export function GetSchedule(): $CancellablePromise<$models.ScheduleEntry[] | nul
     return $Call.ByID(4214853648);
 }
 
+export function GetScheduleFromStorage(...$0: string[]): $CancellablePromise<$models.ScheduleEntry[] | null> {
+    return $Call.ByID(2615587297, $0);
+}
+
 export function OpenAMSignIn(userId: string, password: string): $CancellablePromise<string> {
     return $Call.ByID(4002569639, userId, password);
 }

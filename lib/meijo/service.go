@@ -60,6 +60,58 @@ func (s *Service) SaveScheduleToStorage(schedule []ScheduleEntry) error {
 	}
 	return nil
 }
+
+func (s *Service) GetScheduleFromStorage(...string) ([]ScheduleEntry, error) {
+	days := map[int]string{1: "月", 2: "火", 3: "水", 4: "木", 5: "金", 6: "土", 7: "日"}
+	// check args
+	args := []int{}
+	day := 0
+	if len(args) > 0 {
+		day := int(args[0])
+		if day < 1 || day > 7 {
+			day = 0
+		}
+	}
+	
+	st, err := storage.NewStorage()
+	if err != nil {
+		return []ScheduleEntry{}, err
+	}
+	defer st.Close()
+
+	query := ""
+
+	if day != 0 {
+		query = "SELECT class_name, class_code, class_time, class_day, class_room, class_teacher FROM class_data WHERE class_day = ?"
+	} else {
+		query = "SELECT class_name, class_code, class_time, class_day, class_room, class_teacher FROM class_data"
+	}
+
+	rows, err := st.SqlExec(query, day)
+	if err != nil {
+		return []ScheduleEntry{}, err
+	}
+	schedule := []ScheduleEntry{}
+	for rows.Next() {
+		var className, classCode, classRoom, classTeacher string
+		var classTime, classDay int
+		err = rows.Scan(&className, &classCode, &classTime, &classDay, &classRoom, &classTeacher)
+		if err != nil {
+			return nil, err
+		}
+		entry := classEntry{
+			className:  className,
+			code:       classCode,
+			room:       classRoom,
+			instructor: classTeacher,
+			weekday:    days[classDay],
+			period:     classTime,
+		}
+		schedule = append(schedule, entry)
+	}
+	return schedule, nil
+}
+
 func (s *Service) OpenAMSignIn(userId string, password string) (string, error) {
 	token, err := client.GetToken(userId, password)
 	if err != nil {

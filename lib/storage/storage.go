@@ -109,11 +109,11 @@ func (s *Storage) initDb() error {
 	return nil
 }
 
-func (s *Storage) SqlExec(query string, args ...interface{}) (sql.Result, error) {
+func (s *Storage) SqlExec(query string, args ...interface{}) (*sql.Rows, error) {
 	if s.conn == nil {
 		return nil, errors.New("database connection is not initialized")
 	}
-	res, err := s.conn.Exec(query, args...)
+	res, err := s.conn.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
