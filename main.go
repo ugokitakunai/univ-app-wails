@@ -34,7 +34,11 @@ func initialize() {
 	if err == nil && token != "" {
 		log.Println("OpenAM token found in storage, setting state")
 		state.AppState.SetOpenAMToken(token)
-		state.AppState.SetAppInitialized(true)		
+		state.AppState.SetAppInitialized(true)
+		Service.CampusmateSignIn()
+		Service.GetSchedule()
+		schedule, _ := Service.GetScheduleFromStorage(1)
+		log.Printf("Schedule from storage: %+v", schedule)
 		return
 	}
 

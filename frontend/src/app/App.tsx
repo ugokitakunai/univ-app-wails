@@ -15,6 +15,7 @@ function App() {
   let [showSpinner, setShowSpinner] = useState(false);
 
   function handleLogin() {
+    setShowSpinner(true);
     if (!userId || !password) {
       console.error("User ID and password must be provided");
       return;
@@ -25,6 +26,7 @@ function App() {
         window.location.href = "/#/home";
       })
       .catch((err) => {
+        setShowSpinner(false);
         console.error(err);
         setError(
           "ログインに失敗しました。学籍番号とパスワードを確認してください。",

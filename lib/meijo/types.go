@@ -8,7 +8,7 @@ type ScheduleEntry interface {
 	Code() string
 	Room() string
 	Instructor() string
-	Weekday() string
+	Weekday() int
 	Period() int
 }
 
@@ -17,7 +17,7 @@ type classEntry struct {
 	code       string
 	room       string
 	instructor string
-	weekday    string
+	weekday    int
 	period     int
 }
 

@@ -61,16 +61,9 @@ func (s *Service) SaveScheduleToStorage(schedule []ScheduleEntry) error {
 	return nil
 }
 
-func (s *Service) GetScheduleFromStorage(...string) ([]ScheduleEntry, error) {
-	days := map[int]string{1: "月", 2: "火", 3: "水", 4: "木", 5: "金", 6: "土", 7: "日"}
-	// check args
-	args := []int{}
-	day := 0
-	if len(args) > 0 {
-		day := int(args[0])
-		if day < 1 || day > 7 {
-			day = 0
-		}
+func (s *Service) GetScheduleFromStorage(day int) ([]ScheduleEntry, error) {
+	if day < 0 || day > 7 {
+		day = 0
 	}
 	
 	st, err := storage.NewStorage()
@@ -88,7 +81,9 @@ func (s *Service) GetScheduleFromStorage(...string) ([]ScheduleEntry, error) {
 	}
 
 	rows, err := st.SqlExec(query, day)
+
 	if err != nil {
+		log.Printf("Error executing query: %v", err)
 		return []ScheduleEntry{}, err
 	}
 	schedule := []ScheduleEntry{}
@@ -104,7 +99,7 @@ func (s *Service) GetScheduleFromStorage(...string) ([]ScheduleEntry, error) {
 			code:       classCode,
 			room:       classRoom,
 			instructor: classTeacher,
-			weekday:    days[classDay],
+			weekday:    classDay,
 			period:     classTime,
 		}
 		schedule = append(schedule, entry)

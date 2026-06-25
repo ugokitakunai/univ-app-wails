@@ -18,7 +18,7 @@ func (e classEntry) ClassName() string  { return e.className }
 func (e classEntry) Code() string       { return e.code }
 func (e classEntry) Room() string       { return e.room }
 func (e classEntry) Instructor() string { return e.instructor }
-func (e classEntry) Weekday() string    { return e.weekday }
+func (e classEntry) Weekday() int    { return e.weekday }
 func (e classEntry) Period() int        { return e.period }
 
 
@@ -67,7 +67,6 @@ func (c *MeijoClient) GetSchedule() ([]ScheduleEntry,  error) {
 	}
 
 	var schedule []ScheduleEntry
-	weekdays := []string{"月", "火", "水", "木", "金", "土", "日"}
 	re := regexp.MustCompile(`kougicd=(\d+)`)
 
 	for j := 0; j < 7; j++ {
@@ -105,7 +104,7 @@ func (c *MeijoClient) GetSchedule() ([]ScheduleEntry,  error) {
 					code:       code,
 					room:       room,
 					instructor: instructor,
-					weekday:    weekdays[cnt],
+					weekday:    cnt + 1,
 					period:     j + 1,
 				}
 				// debug
