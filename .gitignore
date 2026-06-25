@@ -10,5 +10,8 @@ build/ios/xcode/gen/
 build/android/overlay.json
 build/android/gen/
 
+.syso
+frontend/.bindings-tmp-*
+
 # db file
 univ.db
