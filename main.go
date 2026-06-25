@@ -17,7 +17,6 @@ import (
 var assets embed.FS
 
 func init() {
-	application.RegisterEvent[bool]("isLoggedIn")
 }
 
 func initialize() {	
@@ -30,24 +29,12 @@ func initialize() {
 
 	Service := &meijo.Service{}
 
-
 	// check if OpenAM token is already stored
 	token, err := s.GetEncryptedStorage("OpenAMToken")
 	if err == nil && token != "" {
 		log.Println("OpenAM token found in storage, setting state")
 		state.AppState.SetOpenAMToken(token)
-		state.AppState.SetAppInitialized(true)
-		Service.CampusmateSignIn()
-		schedule, err := Service.GetSchedule()
-		if err != nil {
-			log.Printf("Failed to get schedule: %v", err)
-		} else {
-			err = Service.SaveScheduleToStorage(schedule)
-			if err != nil {
-				log.Printf("Failed to save schedule to storage: %v", err)
-			}
-		}
-		
+		state.AppState.SetAppInitialized(true)		
 		return
 	}
 
@@ -119,11 +106,9 @@ func main() {
 		initialize()
 		if state.AppState.GetOpenAMToken() != "" {
 			log.Println("User is logged in, emitting isLoggedIn event")
-			app.Event.Emit("isLoggedIn", true)
 		} else {
 			state.AppState.SetAppInitialized(true)
 			log.Println("User is logged out, emitting isLoggedIn event")
-			app.Event.Emit("isLoggedIn", true)
 		}
 	}()
 
