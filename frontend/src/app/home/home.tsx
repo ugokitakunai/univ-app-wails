@@ -5,12 +5,19 @@ import {
 } from "../../../bindings/changeme/lib/meijo/service";
 import ClassListWidget from "../../widget/ClassListWidget";
 import { ScheduleEntry } from "../../../bindings/changeme/lib/meijo";
+import { SidebarLayout } from "../../components/Sidebar/SidebarLayout";
 
 export default function Home() {
   let [schedule, setSchedule] = useState<ScheduleEntry[]>([]);
+  let [currentWeekday, setCurrentWeekday] = useState<number>(
+    new Date().getDay(),
+  );
 
-  async function fetchSchedule() {
-    let schedule = await GetScheduleFromStorage(1);
+  async function fetchSchedule(weekday?: number) {
+    if (weekday === undefined) {
+      weekday = new Date().getDay();
+    }
+    let schedule = await GetScheduleFromStorage(weekday);
     if (schedule !== null) {
       setSchedule(schedule);
     }
@@ -30,8 +37,39 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="mx-2 my-2">
-      <ClassListWidget schedule={schedule} onRefresh={refreshSchedule} />
-    </div>
+    <SidebarLayout>
+      <ClassListWidget
+        schedule={schedule}
+        onClickRefresh={refreshSchedule}
+        onWeekdayChange={(weekday) => {
+          setCurrentWeekday(weekday);
+        }}
+        currentWeekday={currentWeekday}
+      />
+      <ClassListWidget
+        schedule={schedule}
+        onClickRefresh={refreshSchedule}
+        onWeekdayChange={(weekday) => {
+          setCurrentWeekday(weekday);
+        }}
+        currentWeekday={currentWeekday}
+      />
+      <ClassListWidget
+        schedule={schedule}
+        onClickRefresh={refreshSchedule}
+        onWeekdayChange={(weekday) => {
+          setCurrentWeekday(weekday);
+        }}
+        currentWeekday={currentWeekday}
+      />
+      <ClassListWidget
+        schedule={schedule}
+        onClickRefresh={refreshSchedule}
+        onWeekdayChange={(weekday) => {
+          setCurrentWeekday(weekday);
+        }}
+        currentWeekday={currentWeekday}
+      />
+    </SidebarLayout>
   );
 }
