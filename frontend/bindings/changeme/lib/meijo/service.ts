@@ -21,6 +21,10 @@ export function GetScheduleFromStorage(day: number): $CancellablePromise<$models
     return $Call.ByID(2615587297, day);
 }
 
+export function GetTimeSchedule(period: number): $CancellablePromise<string> {
+    return $Call.ByID(558606405, period);
+}
+
 export function OpenAMSignIn(userId: string, password: string): $CancellablePromise<string> {
     return $Call.ByID(4002569639, userId, password);
 }

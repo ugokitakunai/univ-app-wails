@@ -3,22 +3,13 @@ package meijo
 import "github.com/go-resty/resty/v2"
 
 // Campusmate
-type ScheduleEntry interface {
-	ClassName() string
-	Code() string
-	Room() string
-	Instructor() string
-	Weekday() int
-	Period() int
-}
-
-type classEntry struct {
-	className  string
-	code       string
-	room       string
-	instructor string
-	weekday    int
-	period     int
+type ScheduleEntry struct {
+    ClassName  string `json:"className"`
+    Code       string `json:"code"`
+    Room       string `json:"room"`
+    Instructor string `json:"instructor"`
+    Weekday    int    `json:"weekday"`
+    Period     int    `json:"period"`
 }
 
 type MeijoClient struct {

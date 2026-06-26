@@ -53,7 +53,7 @@ func (s *Service) SaveScheduleToStorage(schedule []ScheduleEntry) error {
 	for _, entry := range schedule {
 		log.Printf("Saving schedule entry: %+v", entry)
 		query := "INSERT OR REPLACE INTO class_data (class_name, class_code, class_time, class_day, class_room, class_teacher) VALUES (?, ?, ?, ?, ?, ?)"
-		_, err = st.SqlExec(query, entry.ClassName(), entry.Code(), entry.Period(), entry.Weekday(), entry.Room(), entry.Instructor())
+		_, err = st.SqlExec(query, entry.ClassName, entry.Code, entry.Period, entry.Weekday, entry.Room, entry.Instructor)
 		if err != nil {
 			return err
 		}
@@ -94,13 +94,13 @@ func (s *Service) GetScheduleFromStorage(day int) ([]ScheduleEntry, error) {
 		if err != nil {
 			return nil, err
 		}
-		entry := classEntry{
-			className:  className,
-			code:       classCode,
-			room:       classRoom,
-			instructor: classTeacher,
-			weekday:    classDay,
-			period:     classTime,
+		entry := ScheduleEntry{
+			ClassName:  className,
+			Code:       classCode,
+			Room:       classRoom,
+			Instructor: classTeacher,
+			Weekday:    classDay,
+			Period:     classTime,
 		}
 		schedule = append(schedule, entry)
 	}
@@ -118,4 +118,21 @@ func (s *Service) OpenAMSignIn(userId string, password string) (string, error) {
 		Value: token,
 	}})
 	return token, nil
+}
+
+var timeSchedule = map[int]string{
+	1: "9:10-10:40",
+	2: "10:50-12:20",
+	3: "13:10-14:40",
+	4: "14:50-16:20",
+	5: "16:30-18:00",
+	6: "18:10-19:40",
+	7: "19:50-21:20",
+}
+
+func (s *Service) GetTimeSchedule(period int) string {
+	if time, ok := timeSchedule[period]; ok {
+		return time
+	}
+	return "0:00-0:00"
 }

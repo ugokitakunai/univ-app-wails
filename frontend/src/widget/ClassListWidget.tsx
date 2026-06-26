@@ -1,6 +1,10 @@
+import { ScheduleEntry } from "../../bindings/changeme/lib/meijo";
 import { ClassListItem } from "../components/ClassListItem";
 
-export default function ClassListWidget() {
+export default function ClassListWidget(props: {
+  schedule: ScheduleEntry[];
+  onRefresh?: () => void;
+}) {
   return (
     <div className="border-y border-gray-900">
       <div className="flex justify-between w-full">
@@ -12,33 +16,17 @@ export default function ClassListWidget() {
         </div>
       </div>
       <div className="mt-2">
-        <ClassListItem
-          className=""
-          title="材料力学1"
-          classRoom="E-101"
-          time="10:00-11:30"
-          classId="123123"
-          period="1"
-          active={false}
-        />
-        <ClassListItem
-          className="mt-3"
-          title="材料力学1"
-          classRoom="E-101"
-          time="10:00-11:30"
-          classId="123123"
-          period="2"
-          active={false}
-        />
-        <ClassListItem
-          className="mt-3"
-          title="材料力学1"
-          classRoom="E-101"
-          time="10:00-11:30"
-          classId="123123"
-          period="3"
-          active={false}
-        />
+        {props.schedule.map((entry) => (
+          <ClassListItem
+            key={entry.period}
+            className="border-b border-gray-900"
+            title={entry.className}
+            classRoom={entry.room}
+            classId={entry.code}
+            period={entry.period.toString()}
+            active={true}
+          />
+        ))}
       </div>
     </div>
   );

@@ -13,15 +13,6 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-
-func (e classEntry) ClassName() string  { return e.className }
-func (e classEntry) Code() string       { return e.code }
-func (e classEntry) Room() string       { return e.room }
-func (e classEntry) Instructor() string { return e.instructor }
-func (e classEntry) Weekday() int    { return e.weekday }
-func (e classEntry) Period() int        { return e.period }
-
-
 func (c *MeijoClient) CampusmateSignIn() error{
 	authUrl := "https://rpgkmportal.meijo-u.ac.jp/camweb/hlogin.do"
 	c.Client.SetHeader("User-Agent", "Mozilla/5.0")
@@ -99,17 +90,14 @@ func (c *MeijoClient) GetSchedule() ([]ScheduleEntry,  error) {
 					instructor = strings.ReplaceAll(lines[2], " ", " ")
 				}
 
-				entry := classEntry{
-					className:  aSel.Text(),
-					code:       code,
-					room:       room,
-					instructor: instructor,
-					weekday:    cnt + 1,
-					period:     j + 1,
+				entry := ScheduleEntry{
+					ClassName:  aSel.Text(),
+					Code:       code,
+					Room:       room,
+					Instructor: instructor,
+					Weekday:    cnt + 1,
+					Period:     j + 1,
 				}
-				// debug
-				log.Println("Found class:", entry.ClassName(), "Code:", entry.Code(), "Room:", entry.Room(), "Instructor:", entry.Instructor(), "Weekday:", entry.Weekday(), "Period:", entry.Period())
-
 				schedule = append(schedule, entry)
 			}
 			cnt++

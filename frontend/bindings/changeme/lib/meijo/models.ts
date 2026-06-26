@@ -4,4 +4,11 @@
 /**
  * Campusmate
  */
-export type ScheduleEntry = any;
+export interface ScheduleEntry {
+    "className": string;
+    "code": string;
+    "room": string;
+    "instructor": string;
+    "weekday": number;
+    "period": number;
+}
