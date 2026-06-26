@@ -11,14 +11,20 @@ import (
 	"github.com/danieljoos/wincred"
 	"github.com/fernet/fernet-go"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 
 func getDbPath() (string, error) {
-	baseDir, err := os.UserConfigDir()
-    if err != nil {
-        return "", err
-    }
+	baseDir := application.Mobile.StoragePath()
+	if baseDir == "" {
+		var err error
+		baseDir, err = os.UserConfigDir()
+		if err != nil {
+			return "", err
+		}
+	}
+
 	appDir := filepath.Join(baseDir, "univApp")
 	if err := os.MkdirAll(appDir, os.ModePerm); err != nil {
 		return "", err
