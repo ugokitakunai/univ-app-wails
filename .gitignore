@@ -20,5 +20,6 @@ univ.db
 build/android/app/build
 build/android/.gradle
 build/android/build
-build/android/local.properties
 libwails.so
+build/android/local.properties
+
