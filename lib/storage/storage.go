@@ -5,19 +5,37 @@ import (
 	"encoding/base64"
 	"errors"
 	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/danieljoos/wincred"
 	"github.com/fernet/fernet-go"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var dbPath = "univ.db"
+
+func getDbPath() (string, error) {
+	baseDir, err := os.UserConfigDir()
+    if err != nil {
+        return "", err
+    }
+	appDir := filepath.Join(baseDir, "univApp")
+	if err := os.MkdirAll(appDir, os.ModePerm); err != nil {
+		return "", err
+	}
+
+	return filepath.Join(appDir, "univ.db"), nil
+}
 
 type Storage struct {
 	conn *sql.DB
 }
 
 func NewStorage() (*Storage, error) {
+	dbPath, err := getDbPath()
+	if err != nil {
+		return nil, err
+	}
 	conn, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		return nil, err
