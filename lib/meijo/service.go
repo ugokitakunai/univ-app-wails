@@ -29,7 +29,10 @@ type Service struct {}
 func (s *Service) CampusmateSignIn() {
 	if state.AppState.GetOpenAMTokenExpireTime() < int(time.Now().Unix()) {
 		log.Println("OpenAM token expired, re-signing in")
-		_, err := s.OpenAMSignIn(state.AppState.GetOpenAMUserId(), state.AppState.GetOpenAMPassword())
+		_, err := s.OpenAMSignIn(LoginParam{
+			UserID:   state.AppState.GetOpenAMUserId(),
+			Password: state.AppState.GetOpenAMPassword(),
+		})
 		if err != nil {
 			// TODO: 後でフロントエンドに通知する処理を描く
 			log.Println("Failed to re-sign in to OpenAM:", err)
@@ -107,8 +110,8 @@ func (s *Service) GetScheduleFromStorage(day int) ([]ScheduleEntry, error) {
 	return schedule, nil
 }
 
-func (s *Service) OpenAMSignIn(userId string, password string) (string, error) {
-	token, err := client.GetToken(userId, password)
+func (s *Service) OpenAMSignIn(param LoginParam) (string, error) {
+	token, err := client.GetToken(param.UserID, param.Password)
 	if err != nil {
 		return "", err
 	}
