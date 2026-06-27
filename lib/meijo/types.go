@@ -20,8 +20,3 @@ type MeijoClient struct {
 type AuthResult struct {
     TokenId string `json:"tokenId"`
 }
-
-type LoginParam struct {
-    UserID   string `json:"userId"`
-    Password string `json:"password"`
-}

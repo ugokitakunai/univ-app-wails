@@ -20,7 +20,7 @@ function App() {
       console.error("User ID and password must be provided");
       return;
     }
-    OpenAMSignIn({ userId: userId, password: password })
+    OpenAMSignIn(userId, password)
       .then(() => {
         console.log("Login successful");
         window.location.href = "/#/home";

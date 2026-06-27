@@ -6,7 +6,6 @@ import (
 	"changeme/lib/storage"
 	"embed"
 	"fmt"
-	"log/slog"
 	"time"
 
 	"log"
@@ -48,10 +47,7 @@ func initialize() {
 
 
 	if userId != "" && password != "" {
-		token, err := Service.OpenAMSignIn(meijo.LoginParam{
-			UserID:   userId,
-			Password: password,
-		})
+		token, err := Service.OpenAMSignIn(userId, password)
 		if err != nil {
 			log.Printf("Failed to sign in to OpenAM: %v", err)
 		}
@@ -89,13 +85,14 @@ func main() {
 		Mac: application.MacOptions{
 			ApplicationShouldTerminateAfterLastWindowClosed: true,
 		},
-		LogLevel: slog.LevelDebug,
 	})
 
 	s.SetApp(app)
 
 	app.Window.NewWithOptions(application.WebviewWindowOptions{
 		Title: "Univ",
+		Width:  1000,
+		Height: 618,
 		Mac: application.MacWindow{
 			InvisibleTitleBarHeight: 50,
 			Backdrop:                application.MacBackdropTranslucent,
