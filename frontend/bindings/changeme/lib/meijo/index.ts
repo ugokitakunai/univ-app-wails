@@ -7,6 +7,5 @@ export {
 };
 
 export type {
-    LoginParam,
     ScheduleEntry
 } from "./models.js";
