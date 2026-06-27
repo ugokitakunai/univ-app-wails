@@ -25,8 +25,8 @@ export function GetTimeSchedule(period: number): $CancellablePromise<string> {
     return $Call.ByID(558606405, period);
 }
 
-export function OpenAMSignIn(userId: string, password: string): $CancellablePromise<string> {
-    return $Call.ByID(4002569639, userId, password);
+export function OpenAMSignIn(param: $models.LoginParam): $CancellablePromise<string> {
+    return $Call.ByID(4002569639, param);
 }
 
 export function SaveScheduleToStorage(schedule: $models.ScheduleEntry[] | null): $CancellablePromise<void> {
