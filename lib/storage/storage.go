@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/danieljoos/wincred"
 	"github.com/fernet/fernet-go"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/wailsapp/wails/v3/pkg/application"
@@ -63,33 +62,12 @@ func (s *Storage) Close() error {
 	return nil
 }
 
-func (s *Storage) ResetFernetKey() error {
+func (s *Storage) ResetFernetKey() {
 	fernetKey := generateFernetKey()
-	return storeFernetKey(fernetKey)
+	storeFernetKey(fernetKey)
 }
 
-func (s *Storage) getFernetKey() (string, error) {
-	cred, err := wincred.GetGenericCredential("univApp")
-	if err != nil {
-		newKey := generateFernetKey()
-		if err := storeFernetKey(newKey); err != nil {
-			return "", err
-		}
-		return newKey, nil
-	}
 
-	key := string(cred.CredentialBlob)
-	_, err = fernet.DecodeKey(key)
-	if err != nil {
-		newKey := generateFernetKey()
-		if err := storeFernetKey(newKey); err != nil {
-			return "", err
-		}
-		return newKey, nil
-	}
-
-	return key, nil
-}
 
 func generateFernetKey() string {
 	fernetInstance := fernet.Key{}
@@ -99,11 +77,7 @@ func generateFernetKey() string {
 	return fernetInstance.Encode()
 }
 
-func storeFernetKey(key string) error {
-	cred := wincred.NewGenericCredential("univApp")
-	cred.CredentialBlob = []byte(key)
-	return cred.Write()
-}
+
 
 func (s *Storage) initDb() error {
 	createKeyValueTableQuery := `
