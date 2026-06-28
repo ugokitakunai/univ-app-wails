@@ -27,7 +27,7 @@ function App() {
     OpenAMSignIn(userId, password)
       .then(async (token) => {
         console.log("Login successful");
-        SaveScheduleToStorage(await GetSchedule());
+        await SaveScheduleToStorage(await GetSchedule());
         window.location.href = "/#/home";
       })
       .catch((err) => {

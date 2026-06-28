@@ -88,12 +88,14 @@ func (s *Storage) initDb() error {
 
 	createClassTableQuery := `
 	CREATE TABLE IF NOT EXISTS class_data (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		class_name TEXT NOT NULL,
-		class_code TEXT NOT NULL PRIMARY KEY,
+		class_code TEXT NOT NULL,
 		class_time INTEGER NOT NULL,
 		class_day INTEGER NOT NULL,
 		class_room TEXT,
-		class_teacher TEXT
+		class_teacher TEXT,
+		UNIQUE(class_code, class_time, class_day)
 	);`
 
 	if _, err := s.conn.Exec(createKeyValueTableQuery); err != nil {
