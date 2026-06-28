@@ -88,9 +88,8 @@ func (s *Storage) initDb() error {
 
 	createClassTableQuery := `
 	CREATE TABLE IF NOT EXISTS class_data (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		class_name TEXT NOT NULL,
-		class_code TEXT NOT NULL,
+		class_code TEXT NOT NULL PRIMARY KEY,
 		class_time INTEGER NOT NULL,
 		class_day INTEGER NOT NULL,
 		class_room TEXT,

@@ -64,8 +64,8 @@ func (s *Service) SaveScheduleToStorage(schedule []ScheduleEntry) error {
 }
 
 func (s *Service) GetScheduleFromStorage(day int) ([]ScheduleEntry, error) {
-	if day < 0 || day > 7 {
-		day = 0
+	if day < 0 || day > 6 {
+		day = -1
 	}
 	
 	st, err := storage.NewStorage()
@@ -76,7 +76,7 @@ func (s *Service) GetScheduleFromStorage(day int) ([]ScheduleEntry, error) {
 
 	query := ""
 
-	if day != 0 {
+	if day != -1 {
 		query = "SELECT class_name, class_code, class_time, class_day, class_room, class_teacher FROM class_data WHERE class_day = ?"
 	} else {
 		query = "SELECT class_name, class_code, class_time, class_day, class_room, class_teacher FROM class_data"

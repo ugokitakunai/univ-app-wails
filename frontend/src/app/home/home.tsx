@@ -18,10 +18,13 @@ export default function Home() {
     if (weekday === undefined) {
       weekday = new Date().getDay();
     }
+
     let schedule = await GetScheduleFromStorage(weekday);
     if (schedule !== null) {
       setSchedule(schedule);
     }
+
+    console.log(`Fetched schedule: ${JSON.stringify(schedule)}`);
   }
 
   async function refreshSchedule() {
@@ -37,6 +40,7 @@ export default function Home() {
     });
     const listener = new DateChangeListener(() => {
       setCurrentWeekday(new Date().getDay());
+      setSchedule([]);
       fetchSchedule(currentWeekday).catch((err) => {
         console.error("Error fetching schedule:", err);
       });
@@ -47,30 +51,6 @@ export default function Home() {
 
   return (
     <SidebarLayout>
-      <ClassListWidget
-        schedule={schedule}
-        onClickRefresh={refreshSchedule}
-        onWeekdayChange={(weekday) => {
-          setCurrentWeekday(weekday);
-        }}
-        currentWeekday={currentWeekday}
-      />
-      <ClassListWidget
-        schedule={schedule}
-        onClickRefresh={refreshSchedule}
-        onWeekdayChange={(weekday) => {
-          setCurrentWeekday(weekday);
-        }}
-        currentWeekday={currentWeekday}
-      />
-      <ClassListWidget
-        schedule={schedule}
-        onClickRefresh={refreshSchedule}
-        onWeekdayChange={(weekday) => {
-          setCurrentWeekday(weekday);
-        }}
-        currentWeekday={currentWeekday}
-      />
       <ClassListWidget
         schedule={schedule}
         onClickRefresh={refreshSchedule}

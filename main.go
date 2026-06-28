@@ -25,10 +25,11 @@ func initialize() {
 	}
 	defer s.Close()
 
-	userId, _ := s.GetEncryptedStorage("OpenAMId")
+	userId, err := s.GetEncryptedStorage("OpenAMId")
 	password, _ := s.GetEncryptedStorage("OpenAMPassword")
+	
 
-	if err == nil && userId != "" && password != "" {
+	if userId != "" && password != "" {
 		log.Println("OpenAM token found in storage, setting state")
 		state.AppState.SetOpenAMUserId(userId)
 		state.AppState.SetOpenAMPassword(password)
@@ -79,12 +80,6 @@ func main() {
 
 	go func() {
 		initialize()
-		if state.AppState.GetOpenAMToken() != "" {
-			log.Println("User is logged in, emitting isLoggedIn event")
-		} else {
-			state.AppState.SetAppInitialized(true)
-			log.Println("User is logged out, emitting isLoggedIn event")
-		}
 	}()
 
 	err := app.Run()

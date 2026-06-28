@@ -8,7 +8,7 @@ import {
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import {
-  GetOpenAMToken,
+  GetOpenAMPassword,
   IsAppInitialized,
 } from "../../bindings/changeme/lib/state/state";
 
@@ -46,12 +46,12 @@ function App() {
       if (await IsAppInitialized()) {
         console.log("App is initialized, checking for OpenAM token...");
         setShowSpinner(true);
-        const token = await GetOpenAMToken();
+        const password = await GetOpenAMPassword();
 
-        if (token !== "") {
+        if (password !== "") {
           window.location.href = "/#/home";
         } else {
-          console.log("No OpenAM token found, staying on login page.");
+          console.log("No OpenAM password found, staying on login page.");
           setShowSpinner(false);
         }
       } else {
