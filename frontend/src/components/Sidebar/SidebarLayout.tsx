@@ -4,15 +4,18 @@ import { Sidebar } from "./SIdebar";
 
 export function SidebarLayout(props: { children: React.ReactNode }) {
   let [isOpen, setIsOpen] = useState(false);
+  let [activePage, setActivePage] = useState("home");
+
   return (
     <div className="flex h-screen">
       <Sidebar
         isOpen={isOpen}
-        activePage="aa"
+        activePage={activePage}
         onClose={() => setIsOpen(false)}
+        onActivePageChange={(page) => setActivePage(page)}
       />
       <div className="flex-1">
-        <div className="sm:ml-52 mb-12 sm:mb-12 transition-all duration-200 ease-in-out">
+        <div className="sm:ml-64 mb-12 sm:mb-12 transition-all duration-200 ease-in-out">
           {props.children}
         </div>
         <div className="h-1">

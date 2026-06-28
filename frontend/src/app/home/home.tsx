@@ -3,7 +3,7 @@ import {
   GetSchedule,
   GetScheduleFromStorage,
 } from "../../../bindings/changeme/lib/meijo/service";
-import ClassListWidget from "../../widget/ClassListWidget";
+import ClassListWidget from "../../widget/ClassList/ClassListWidget";
 import { ScheduleEntry } from "../../../bindings/changeme/lib/meijo";
 import { SidebarLayout } from "../../components/Sidebar/SidebarLayout";
 import { DateChangeListener } from "../../utils/dateChangeListener";

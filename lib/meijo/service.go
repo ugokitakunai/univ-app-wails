@@ -138,19 +138,47 @@ func (s *Service) OpenAMSignIn(userId string, password string) (string, error) {
 	return token, nil
 }
 
-var timeSchedule = map[int]string{
-	1: "9:10-10:40",
-	2: "10:50-12:20",
-	3: "13:10-14:40",
-	4: "14:50-16:20",
-	5: "16:30-18:00",
-	6: "18:10-19:40",
-	7: "19:50-21:20",
+type periodRange struct {
+	startHour   int
+	startMinute int
+	endHour     int
+	endMinute   int
+	display     string
+}
+
+var timeSchedules = map[int]periodRange{
+	1: {9, 10, 10, 40, "9:10-10:40"},
+	2: {10, 50, 12, 20, "10:50-12:20"},
+	3: {13, 10, 14, 40, "13:10-14:40"},
+	4: {14, 50, 16, 20, "14:50-16:20"},
+	5: {16, 30, 18, 0, "16:30-18:00"},
+	6: {18, 10, 19, 40, "18:10-19:40"},
+	7: {19, 50, 21, 20, "19:50-21:20"},
 }
 
 func (s *Service) GetTimeSchedule(period int) string {
-	if time, ok := timeSchedule[period]; ok {
-		return time
+	if sched, ok := timeSchedules[period]; ok {
+		return sched.display
 	}
 	return "0:00-0:00"
+}
+
+func (s *Service) GetCurrentPeriod() int {
+	now := time.Now()
+	hour, min, _ := now.Clock()
+
+	for period, sched := range timeSchedules {
+		if isTimeInWindow(hour, min, sched) {
+			return period
+		}
+	}
+	return -1
+}
+
+func isTimeInWindow(hour, min int, sched periodRange) bool {
+	currentMinutes := hour*60 + min
+	startMinutes := sched.startHour*60 + sched.startMinute
+	endMinutes := sched.endHour*60 + sched.endMinute
+
+	return currentMinutes >= startMinutes && currentMinutes <= endMinutes
 }

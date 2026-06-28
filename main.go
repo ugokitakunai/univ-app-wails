@@ -28,7 +28,6 @@ func initialize() {
 	userId, err := s.GetEncryptedStorage("OpenAMId")
 	password, _ := s.GetEncryptedStorage("OpenAMPassword")
 	
-
 	if userId != "" && password != "" {
 		log.Println("OpenAM token found in storage, setting state")
 		state.AppState.SetOpenAMUserId(userId)

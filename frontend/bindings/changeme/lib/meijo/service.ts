@@ -13,6 +13,10 @@ export function CampusmateSignIn(): $CancellablePromise<void> {
     return $Call.ByID(2871869773);
 }
 
+export function GetCurrentPeriod(): $CancellablePromise<number> {
+    return $Call.ByID(3460907063);
+}
+
 export function GetSchedule(): $CancellablePromise<$models.ScheduleEntry[] | null> {
     return $Call.ByID(4214853648);
 }
