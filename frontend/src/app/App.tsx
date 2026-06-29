@@ -82,7 +82,7 @@ function App() {
         </div>
         {showSpinner && (
           <>
-            <div className="absolute inset-0 bg-black/50 z-10"></div>
+            <div className="absolute inset-0 bg-black/80 z-10"></div>
             <div className="absolute inset-0 flex items-center justify-center z-10">
               <svg
                 className="text-gray-300 animate-spin"

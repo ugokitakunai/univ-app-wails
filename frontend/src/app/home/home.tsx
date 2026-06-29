@@ -50,7 +50,7 @@ export default function Home() {
   }, []);
 
   return (
-    <SidebarLayout>
+    <SidebarLayout title="Home">
       <ClassListWidget
         schedule={schedule}
         onClickRefresh={refreshSchedule}

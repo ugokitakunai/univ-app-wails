@@ -1,10 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Header } from "./Header";
 import { Sidebar } from "./SIdebar";
 
-export function SidebarLayout(props: { children: React.ReactNode }) {
+export function SidebarLayout(props: {
+  children: React.ReactNode;
+  activePage?: string;
+  backPage?: string;
+  title: string;
+  accentColor?: string;
+}) {
   let [isOpen, setIsOpen] = useState(false);
   let [activePage, setActivePage] = useState("home");
+  let [backPage, setBackPage] = useState(props.backPage || undefined);
+
+  useEffect(() => {
+    if (props.activePage) {
+      setActivePage(props.activePage);
+    }
+    if (props.backPage) {
+      setBackPage(props.backPage);
+    }
+  }, [props.activePage, props.backPage]);
 
   return (
     <div className="flex h-screen">
@@ -20,10 +36,12 @@ export function SidebarLayout(props: { children: React.ReactNode }) {
         </div>
         <div className="h-1">
           <Header
-            title="Home"
+            title={props.title}
             onMenuClick={() => {
               setIsOpen(!isOpen);
             }}
+            backPage={backPage}
+            accentColor={props.accentColor || "#C0ECE2"}
           />
         </div>
       </div>

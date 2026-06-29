@@ -18,7 +18,7 @@ export function Sidebar(props: {
           sm:hidden`}
       />
       <aside
-        className={`fixed top-0 left-0 z-40 w-64 h-full transition-transform bg-[#242424] border-r border-[#424242]
+        className={`fixed top-0 left-0 z-40 w-64 h-full transition-transform bg-[#242424] border-r border-[#424242] select-none
         ${props.isOpen ? "translate-x-0" : "-translate-x-full"} 
         sm:translate-x-0`}
       >
@@ -30,7 +30,7 @@ export function Sidebar(props: {
             title="Home"
             active={props.activePage === "home"}
             onClick={() => {
-              window.location.href = "/";
+              window.location.hash = "/home";
               props.onActivePageChange("home");
             }}
           />

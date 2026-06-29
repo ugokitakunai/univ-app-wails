@@ -29,3 +29,29 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
+
+/* マウント（ページ遷移）時に右へ滑り込ませるキーフレーム */
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(0px);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateX(40px); /* translate-x-10 と同じ */
+    opacity: 1;
+  }
+}
+
+/* 戻るボタンがある状態のクラス */
+.title-has-back {
+  transform: translateX(40px);
+  /* ページ遷移（再マウント）時はこのアニメーションが走る */
+  animation: slideInFromLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 戻るボタンがない状態のクラス */
+.title-no-back {
+  transform: translateX(0px);
+  /* ボタンが消えた時は、通常のtransitionで左へスムーズに戻る */
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}

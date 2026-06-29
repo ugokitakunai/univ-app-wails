@@ -3,6 +3,7 @@ import { ClassListItem } from "./ClassListItem";
 import { ListHeader } from "../../components/ListHeader";
 import { useState, useEffect } from "react";
 import { GetCurrentPeriod } from "../../../bindings/changeme/lib/meijo/service";
+import { IconQueuePopOut } from "@tabler/icons-react";
 
 export default function ClassListWidget(props: {
   schedule: ScheduleEntry[];
@@ -34,12 +35,24 @@ export default function ClassListWidget(props: {
   return (
     <div className="">
       <ListHeader accentColor={accentColor}>
-        <div>授業一覧</div>
-        {props.currentWeekday !== undefined && (
-          <div className="flex items-center">
-            : {days[props.currentWeekday]}
+        <div className="flex justify-between items-center w-full">
+          <div className="flex items-center gap-3">
+            <div>授業一覧</div>
+            {props.currentWeekday !== undefined && (
+              <div className="flex items-center">
+                : {days[props.currentWeekday]}
+              </div>
+            )}
           </div>
-        )}
+          <div
+            className="flex px-2 gap-2 rounded-full hover:bg-black/10 cursor-pointer"
+            onClick={() => {
+              window.location.href = "/#/class";
+            }}
+          >
+            <IconQueuePopOut stroke={2} />
+          </div>
+        </div>
       </ListHeader>
       <div className="">
         {props.schedule.map((entry) => (

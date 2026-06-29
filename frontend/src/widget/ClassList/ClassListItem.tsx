@@ -31,7 +31,7 @@ export function ClassListItem(props: {
 
   return (
     <div className={props.className}>
-      <div className="px-2 py-3 flex items-center justify-center relative">
+      <div className="px-2 py-3 flex items-center justify-center relative select-none">
         <span style={stripeStyle} />
 
         <div

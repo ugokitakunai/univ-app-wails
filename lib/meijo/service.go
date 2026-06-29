@@ -172,7 +172,10 @@ func (s *Service) GetCurrentPeriod() int {
 			return period
 		}
 	}
-	return -1
+	if hour > 21 || (hour == 21 && min > 20) {
+		return -1
+	}
+	return 1
 }
 
 func isTimeInWindow(hour, min int, sched periodRange) bool {

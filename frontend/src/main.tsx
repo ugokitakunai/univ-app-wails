@@ -4,6 +4,7 @@ import App from "./app/App";
 import "./style.css";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import Home from "./app/home/home";
+import { ClassTablePage } from "./app/class/classTablePage";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
@@ -11,6 +12,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/class" element={<ClassTablePage />} />
       </Routes>
     </HashRouter>
   </React.StrictMode>,
