@@ -23,12 +23,22 @@ type Settings struct {
 
 	// frontend
 	HomeWidgets []Widget `json:"homeWidgets"`
+	Campus     string   `json:"campus"`
 
 	// backend
 	PrinterEnabled bool `json:"printerEnabled"`
 }
 
 var AppSettings *Settings
+
+var DefaultSettings = &Settings{
+	HomeWidgets: []Widget{
+		{WidgetId: "classList", AccentColor: "#d3faf1", CharColor: "#000000", Position: 0},
+		{WidgetId: "classTable", AccentColor: "#f0e6ff", CharColor: "#000000", Position: 1},
+	},
+	PrinterEnabled: false,
+	Campus: "tempaku",
+}
 
 func getFilePath() (string, error) {
 	baseDir := application.Mobile.StoragePath()

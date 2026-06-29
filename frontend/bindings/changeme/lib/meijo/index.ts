@@ -7,5 +7,6 @@ export {
 };
 
 export type {
+    PCRoomStatus,
     ScheduleEntry
 } from "./models.js";

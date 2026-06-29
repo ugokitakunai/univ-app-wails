@@ -17,6 +17,10 @@ export function GetCurrentPeriod(): $CancellablePromise<number> {
     return $Call.ByID(3460907063);
 }
 
+export function GetPCRoomStatus(campus: string): $CancellablePromise<$models.PCRoomStatus[] | null> {
+    return $Call.ByID(2492192757, campus);
+}
+
 export function GetSchedule(): $CancellablePromise<$models.ScheduleEntry[] | null> {
     return $Call.ByID(4214853648);
 }

@@ -21,6 +21,9 @@ func init() {
 func initialize() {	
 	state.AppState.SetAppInitialized(false)
 	settings.AppSettings = &settings.Settings{}
+
+	state.AppState.SetAppInitialized(true)
+	
 	err := settings.AppSettings.LoadSettingFromStorage()
 	log.Printf("%+v", settings.AppSettings.GetWidgets())
 	if err != nil {

@@ -16,10 +16,11 @@ import { Select } from "../../components/Select";
 import { IconMenu, IconPalette, IconTrash } from "@tabler/icons-react";
 import { HexColorPicker } from "react-colorful";
 
-const availableWidgets = ["classList", "classTable"];
+const availableWidgets = ["classList", "classTable", "pcRoom"];
 const friendlyNames: { [key: string]: string } = {
   classList: "授業一覧(1日)",
   classTable: "授業一覧(週)",
+  pcRoom: "PC教室の空き",
 };
 
 function SortableWidget({

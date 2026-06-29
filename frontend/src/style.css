@@ -12,7 +12,7 @@
   --glass-border: rgba(255, 255, 255, 0.12);
   --radius: 11px;
   --grad: linear-gradient(135deg, #ff5a4d 0%, #ff2d72 100%);
-  background: #242424;
+  background: #000;
 
   /* Golden-ratio spacing scale (φ ≈ 1.618), used for the vertical rhythm. */
   --s-1: 0.618rem; /* φ⁻¹ */
@@ -22,36 +22,39 @@
   --s-5: 4.236rem; /* φ³  */
 
   font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    "Josefin Sans",
+    "Noto Sans JP",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    "Helvetica Neue",
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji";
   color-scheme: dark;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
 
-/* マウント（ページ遷移）時に右へ滑り込ませるキーフレーム */
-@keyframes slideInFromLeft {
-  from {
-    transform: translateX(0px);
-    opacity: 0.5;
-  }
-  to {
-    transform: translateX(40px); /* translate-x-10 と同じ */
-    opacity: 1;
-  }
+@font-face {
+  font-family: "LINE Seed JP";
+  src:
+    url("LINESeedJP_OTF_Rg.woff2") format("woff2"),
+    url("LINESeedJP_OTF_Rg.woff") format("woff");
+  font-display: swap;
 }
 
-/* 戻るボタンがある状態のクラス */
-.title-has-back {
-  transform: translateX(40px);
-  /* ページ遷移（再マウント）時はこのアニメーションが走る */
-  animation: slideInFromLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+@font-face {
+  font-family: "Josefin Sans";
+  src: url("JosefinSans-Regular.ttf") format("truetype");
+  font-display: swap;
 }
 
-/* 戻るボタンがない状態のクラス */
-.title-no-back {
-  transform: translateX(0px);
-  /* ボタンが消えた時は、通常のtransitionで左へスムーズに戻る */
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+@font-face {
+  font-family: "Noto Sans JP";
+  src: url("NotoSansJP-Regular.ttf") format("truetype");
+  font-display: swap;
 }

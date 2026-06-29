@@ -46,6 +46,26 @@ func (s *Service) GetSchedule() ([]ScheduleEntry, error) {
 	return client.GetSchedule()
 }
 
+
+func contains(campuses []string, campus string) bool {
+	for _, c := range campuses {
+		if c == campus {
+			return true
+		}
+	}
+	return false
+}	
+
+func (s *Service) GetPCRoomStatus(campus string) ([]PCRoomStatus, error) {
+	campuses := []string{"tempaku", "yagoto", "dome"}
+	if !contains(campuses, campus) {
+		return nil, fmt.Errorf("invalid campus: %s", campus)
+	}
+	return client.FetchPcRoomStatus(campus), nil
+}
+
+
+
 func (s *Service) SaveScheduleToStorage(schedule []ScheduleEntry) error {
 	st, err := storage.NewStorage()
 		if err != nil {

@@ -30,7 +30,7 @@ export function ListHeader(props: {
         <div
           className={`w-full h-2`}
           style={{
-            backgroundImage: `repeating-linear-gradient(45deg, ${accentColor}, ${accentColor} 4px, transparent 4px, transparent 10px)`,
+            backgroundImage: `repeating-linear-gradient(45deg, ${accentColor},  ${accentColor} 4px, transparent 4px, transparent 10px)`,
           }}
         ></div>
       </div>

@@ -10,13 +10,15 @@ import { SidebarLayout } from "../../components/Sidebar/SidebarLayout";
 import { DateChangeListener } from "../../utils/dateChangeListener";
 import { Widget } from "../../../bindings/changeme/lib/settings";
 import { GetWidgets } from "../../../bindings/changeme/lib/settings/settings";
+import { PCRoomWidget } from "../../widget/PCRoomWidget/PCRoomWidget";
+import { Hero } from "../../components/Hero";
+import { ListHeader } from "../../components/ListHeader";
 
 export default function Home() {
   const [schedule, setSchedule] = useState<ScheduleEntry[]>([]);
   const [currentWeekday, setCurrentWeekday] = useState<number>(
     new Date().getDay(),
   );
-  const [sidebarColor, setSidebarColor] = useState("#9af1dd");
   const [widgets, setWidgets] = useState<Widget[]>([]);
   const widgetRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -41,31 +43,6 @@ export default function Home() {
 
   useEffect(() => {
     if (widgets.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const widgetId = entry.target.getAttribute("data-widget-id");
-            const activeWidget = widgets.find((w) => w.widgetId === widgetId);
-
-            if (activeWidget) {
-              setSidebarColor(activeWidget.accentColor);
-            }
-          }
-        });
-      },
-      {
-        rootMargin: "-30% 0px -70% 0px",
-        threshold: 0,
-      },
-    );
-
-    Object.values(widgetRefs.current).forEach((el) => {
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
   }, [widgets]);
 
   async function fetchSchedule(weekday?: number) {
@@ -93,6 +70,8 @@ export default function Home() {
         );
       case "classTable":
         return <ClassTable accentColor={widget.accentColor} />;
+      case "pcRoom":
+        return <PCRoomWidget accentColor={widget.accentColor} />;
       default:
         return null;
     }
@@ -100,19 +79,26 @@ export default function Home() {
 
   return (
     <div style={{ transition: "all 0.5s ease" }} className="w-full h-full">
-      <SidebarLayout title="Home" accentColor={sidebarColor}>
-        <div className="flex flex-col gap-19">
-          {widgets.map((widget) => (
-            <div
-              key={widget.widgetId}
-              data-widget-id={widget.widgetId}
-              ref={(el) => {
-                widgetRefs.current[widget.widgetId] = el;
-              }}
-            >
-              {renderWidget(widget)}
-            </div>
-          ))}
+      <SidebarLayout title="Home">
+        <div>
+          <ListHeader accentColor="#c0ddff">
+            <div>ホーム</div>
+          </ListHeader>
+          <Hero title={"こんばんは！"} subtitle="ugokitakunai" />
+
+          <div className="flex flex-col gap-19">
+            {widgets.map((widget) => (
+              <div
+                key={widget.widgetId}
+                data-widget-id={widget.widgetId}
+                ref={(el) => {
+                  widgetRefs.current[widget.widgetId] = el;
+                }}
+              >
+                {renderWidget(widget)}
+              </div>
+            ))}
+          </div>
         </div>
       </SidebarLayout>
     </div>
