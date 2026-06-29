@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
@@ -18,6 +19,8 @@ type Widget struct {
 }
 
 type Settings struct {
+	mu sync.Mutex
+
 	// frontend
 	HomeWidgets []Widget `json:"homeWidgets"`
 
@@ -45,8 +48,7 @@ func getFilePath() (string, error) {
 	return filepath.Join(appDir, "setting.json"), nil
 }
 
-
-func (s *Settings) SaveSettingToStorage() error {
+func (s *Settings) saveSettingToStorageUnsafe() error {
 	path, err := getFilePath()
 	if err != nil {
 		return err
@@ -65,7 +67,16 @@ func (s *Settings) SaveSettingToStorage() error {
 	return nil
 }
 
+func (s *Settings) SaveSettingToStorage() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.saveSettingToStorageUnsafe()
+}
+
 func (s *Settings) LoadSettingFromStorage() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	path, err := getFilePath()
 	if err != nil {
 		return err
@@ -78,7 +89,7 @@ func (s *Settings) LoadSettingFromStorage() error {
 			{WidgetId: "classTable", AccentColor: "#f0e6ff", CharColor: "#000000", Position: 1},
 		}
 		s.PrinterEnabled = false
-		return s.SaveSettingToStorage()
+		return s.saveSettingToStorageUnsafe()
 	} // save default settings
 
 	data, err := os.ReadFile(path)
@@ -94,49 +105,89 @@ func (s *Settings) LoadSettingFromStorage() error {
 }
 
 func (s *Settings) GetWidgetById(widgetId string) *Widget {
-    for i := range s.HomeWidgets {
-        if s.HomeWidgets[i].WidgetId == widgetId {
-            return &s.HomeWidgets[i]
-        }
-    }
-    return nil
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	for i := range s.HomeWidgets {
+		if s.HomeWidgets[i].WidgetId == widgetId {
+			return &s.HomeWidgets[i]
+		}
+	}
+	return nil
 }
 
 func (s *Settings) SetWidget(widget Widget) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	found := false
 	for i, w := range s.HomeWidgets {
 		if w.WidgetId == widget.WidgetId {
 			s.HomeWidgets[i] = widget
-			return
+			found = true
+			break
 		}
 	}
-	s.HomeWidgets = append(s.HomeWidgets, widget)
+	if !found {
+		s.HomeWidgets = append(s.HomeWidgets, widget)
+	}
+
+	if err := s.saveSettingToStorageUnsafe(); err != nil {
+		log.Printf("Failed to auto-save settings: %v", err)
+	}
 }
 
 func (s *Settings) SetWidgets(widgets []Widget) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	s.HomeWidgets = widgets
+
+	if err := s.saveSettingToStorageUnsafe(); err != nil {
+		log.Printf("Failed to auto-save settings: %v", err)
+	}
 }
 
 func (s *Settings) RemoveWidget(widgetId string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	for i, w := range s.HomeWidgets {
 		if w.WidgetId == widgetId {
 			s.HomeWidgets = append(s.HomeWidgets[:i], s.HomeWidgets[i+1:]...)
+			if err := s.saveSettingToStorageUnsafe(); err != nil {
+				log.Printf("Failed to auto-save settings: %v", err)
+			}
 			return
 		}
 	}
 }
 
 func (s *Settings) GetWidgets() []Widget {
-	return s.HomeWidgets
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	dst := make([]Widget, len(s.HomeWidgets))
+	copy(dst, s.HomeWidgets)
+	return dst
 }
 
 func (s *Settings) IsPrinterEnabled() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	return s.PrinterEnabled
 }
 
 func (s *Settings) SetPrinterEnabled(enabled bool) {
-	s.PrinterEnabled = enabled
-}
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
+	s.PrinterEnabled = enabled
+
+	if err := s.saveSettingToStorageUnsafe(); err != nil {
+		log.Printf("Failed to auto-save settings: %v", err)
+	}
+}
 
 func (s *Settings) GetBestTextColorForAccent(accentColor string) string {
 	var r, g, b int

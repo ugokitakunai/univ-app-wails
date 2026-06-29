@@ -17,6 +17,7 @@ export default function ClassListWidget(props: {
   let accentColor = props.accentColor || "#d3faf1";
 
   const [currentPeriod, setCurrentPeriod] = useState<number>(-1);
+  currentPeriod;
   let [textColor, setTextColor] = useState("#000000");
 
   useEffect(() => {
