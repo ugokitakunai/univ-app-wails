@@ -98,6 +98,8 @@ func (s *Storage) initDb() error {
 		UNIQUE(class_code, class_time, class_day)
 	);`
 
+	
+
 	if _, err := s.conn.Exec(createKeyValueTableQuery); err != nil {
 		return err
 	}

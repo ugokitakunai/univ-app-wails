@@ -2,6 +2,7 @@ package main
 
 import (
 	"changeme/lib/meijo"
+	"changeme/lib/settings"
 	"changeme/lib/state"
 	"changeme/lib/storage"
 	"embed"
@@ -19,6 +20,12 @@ func init() {
 
 func initialize() {	
 	state.AppState.SetAppInitialized(false)
+	settings.AppSettings = &settings.Settings{}
+	err := settings.AppSettings.LoadSettingFromStorage()
+	log.Printf("%+v", settings.AppSettings.GetWidgets())
+	if err != nil {
+		log.Fatalf("Failed to load settings: %v", err)
+	}
 	s, err := storage.NewStorage()
 	if err != nil {
 		log.Fatalf("Failed to initialize storage: %v", err)
@@ -33,20 +40,25 @@ func initialize() {
 		state.AppState.SetOpenAMUserId(userId)
 		state.AppState.SetOpenAMPassword(password)
 		state.AppState.SetAppInitialized(true)
+		log.Println("App initialized successfully")
 		return
 	}
+
+	log.Println("No OpenAM token found in storage, app not initialized")
 
 	state.AppState.SetAppInitialized(true)
 }
 
 func main() {
 	s := state.AppState
+	initialize()
 	app := application.New(application.Options{
 		Name:        "react-app",
 		Description: "A demo of using raw HTML & CSS",
 		Services: []application.Service{
 			application.NewService(&meijo.Service{}),
 			application.NewService(s),
+			application.NewService(settings.AppSettings),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
@@ -76,10 +88,6 @@ func main() {
 			meijo.RunPrintServer()
 		}()
 	}
-
-	go func() {
-		initialize()
-	}()
 
 	err := app.Run()
 

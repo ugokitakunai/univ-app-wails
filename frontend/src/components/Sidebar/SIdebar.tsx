@@ -1,4 +1,4 @@
-import { IconHome } from "@tabler/icons-react";
+import { IconHome, IconSettings } from "@tabler/icons-react";
 import { SidebarItem } from "./SidebarItem";
 import { Profile } from "./Profile";
 import { SidebarDivider } from "./SidebarDivider";
@@ -7,6 +7,7 @@ export function Sidebar(props: {
   isOpen: boolean;
   activePage: string;
   onClose: () => void;
+  accentColor: string;
   onActivePageChange: (page: string) => void;
 }) {
   return (
@@ -28,10 +29,21 @@ export function Sidebar(props: {
           <SidebarItem
             icon={<IconHome stroke={1} size={22} />}
             title="Home"
+            accentColor={props.accentColor}
             active={props.activePage === "home"}
             onClick={() => {
               window.location.hash = "/home";
               props.onActivePageChange("home");
+            }}
+          />
+          <SidebarItem
+            icon={<IconSettings stroke={1} size={22} />}
+            title="Settings"
+            accentColor={props.accentColor}
+            active={props.activePage === "settings"}
+            onClick={() => {
+              window.location.hash = "/settings";
+              props.onActivePageChange("settings");
             }}
           />
         </div>

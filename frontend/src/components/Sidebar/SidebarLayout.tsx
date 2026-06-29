@@ -29,6 +29,7 @@ export function SidebarLayout(props: {
         activePage={activePage}
         onClose={() => setIsOpen(false)}
         onActivePageChange={(page) => setActivePage(page)}
+        accentColor="#7dffdf"
       />
       <div className="flex-1">
         <div className="sm:ml-64 mb-12 sm:mb-12 transition-all duration-200 ease-in-out">

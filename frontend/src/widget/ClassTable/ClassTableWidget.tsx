@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { GetScheduleFromStorage } from "../../../bindings/changeme/lib/meijo/service";
 import { ScheduleEntry } from "../../../bindings/changeme/lib/meijo";
 import { ListHeader } from "../../components/ListHeader";
+import { GetBestTextColorForAccent } from "../../../bindings/changeme/lib/settings/settings";
 
 export function ClassTable(props: { accentColor?: string; backPage?: string }) {
   let [schedule, setSchedule] = useState<ScheduleEntry[]>([]);
+  let [textColor, setTextColor] = useState("#000000");
   useEffect(() => {
     async function fetchSchedule() {
       let sc = await GetScheduleFromStorage(-1);
@@ -17,6 +19,15 @@ export function ClassTable(props: { accentColor?: string; backPage?: string }) {
     fetchSchedule().catch((err) => {
       console.error("Error fetching schedule:", err);
     });
+
+    async function GetTextColorForAccent(accentColor: string) {
+      await GetBestTextColorForAccent(accentColor).then((charColor) => {
+        setTextColor(charColor);
+      });
+    }
+    GetTextColorForAccent(props.accentColor || "#C0ECE2").catch((err) => {
+      console.error("Error fetching best text color:", err);
+    });
   }, []);
   return (
     <div>
@@ -24,7 +35,10 @@ export function ClassTable(props: { accentColor?: string; backPage?: string }) {
         accentColor={props.accentColor || "#C0ECE2"}
         backPage={props.backPage || undefined}
       >
-        <div className="flex justify-between items-center w-full">
+        <div
+          className="flex justify-between items-center w-full"
+          style={{ color: textColor }}
+        >
           <div className="flex items-center gap-3">
             <div>授業一覧</div>
           </div>
@@ -32,7 +46,12 @@ export function ClassTable(props: { accentColor?: string; backPage?: string }) {
       </ListHeader>
       <table className="w-full mt-2 table-fixed">
         <thead className="text-black">
-          <tr style={{ backgroundColor: props.accentColor || "#C0ECE2" }}>
+          <tr
+            style={{
+              backgroundColor: props.accentColor || "#C0ECE2",
+              color: textColor,
+            }}
+          >
             <th className="text-center w-10">#</th>
             <th className="text-center">月</th>
             <th className="text-center">火</th>
@@ -59,8 +78,8 @@ export function ClassTable(props: { accentColor?: string; backPage?: string }) {
                   >
                     {entry && (
                       <div>
-                        <div>{entry.className}</div>
-                        <div>{entry.room}</div>
+                        <div className="mt-1">{entry.className}</div>
+                        <div className="my-1">{entry.room}</div>
                       </div>
                     )}
                   </td>

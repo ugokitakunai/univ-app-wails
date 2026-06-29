@@ -1,20 +1,23 @@
 import { ScheduleEntry } from "../../../bindings/changeme/lib/meijo";
 import { ClassListItem } from "./ClassListItem";
-import { ListHeader } from "../../components/ListHeader";
 import { useState, useEffect } from "react";
 import { GetCurrentPeriod } from "../../../bindings/changeme/lib/meijo/service";
 import { IconQueuePopOut } from "@tabler/icons-react";
+import { ListHeader } from "../../components/ListHeader";
+import { GetBestTextColorForAccent } from "../../../bindings/changeme/lib/settings/settings";
 
 export default function ClassListWidget(props: {
   schedule: ScheduleEntry[];
   currentWeekday?: number;
   onClickRefresh?: () => void;
   onWeekdayChange?: (e: number) => void;
+  accentColor?: string;
 }) {
   let days = ["日", "月", "火", "水", "木", "金", "土"];
-  let accentColor = "#d3faf1";
+  let accentColor = props.accentColor || "#d3faf1";
 
   const [currentPeriod, setCurrentPeriod] = useState<number>(-1);
+  let [textColor, setTextColor] = useState("#000000");
 
   useEffect(() => {
     async function updatePeriod() {
@@ -27,6 +30,14 @@ export default function ClassListWidget(props: {
     }
 
     updatePeriod();
+    async function GetTextColorForAccent(accentColor: string) {
+      await GetBestTextColorForAccent(accentColor).then((charColor) => {
+        setTextColor(charColor);
+      });
+    }
+    GetTextColorForAccent(accentColor).catch((err) => {
+      console.error("Error fetching best text color:", err);
+    });
 
     const timer = setInterval(updatePeriod, 60000);
     return () => clearInterval(timer);
@@ -36,7 +47,7 @@ export default function ClassListWidget(props: {
     <div className="">
       <ListHeader accentColor={accentColor}>
         <div className="flex justify-between items-center w-full">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3" style={{ color: textColor }}>
             <div>授業一覧</div>
             {props.currentWeekday !== undefined && (
               <div className="flex items-center">
@@ -63,7 +74,7 @@ export default function ClassListWidget(props: {
             classRoom={entry.room}
             classId={entry.code}
             period={entry.period.toString()}
-            active={entry.period === currentPeriod}
+            active={true}
             accentColor={accentColor}
           />
         ))}
