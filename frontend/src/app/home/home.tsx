@@ -6,6 +6,7 @@ import {
 import ClassListWidget from "../../widget/ClassListWidget";
 import { ScheduleEntry } from "../../../bindings/changeme/lib/meijo";
 import { SidebarLayout } from "../../components/Sidebar/SidebarLayout";
+import { DateChangeListener } from "../../utils/dateChangeListener";
 
 export default function Home() {
   let [schedule, setSchedule] = useState<ScheduleEntry[]>([]);
@@ -34,6 +35,14 @@ export default function Home() {
     fetchSchedule().catch((err) => {
       console.error("Error fetching schedule:", err);
     });
+    const listener = new DateChangeListener(() => {
+      setCurrentWeekday(new Date().getDay());
+      fetchSchedule(currentWeekday).catch((err) => {
+        console.error("Error fetching schedule:", err);
+      });
+    });
+    listener.start();
+    return () => listener.stop();
   }, []);
 
   return (

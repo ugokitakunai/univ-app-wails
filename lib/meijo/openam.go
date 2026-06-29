@@ -3,6 +3,7 @@ package meijo
 import (
 	"changeme/lib/storage"
 	"errors"
+	"log"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -48,6 +49,7 @@ func (o *MeijoClient) GetToken(userId string, password string) (string, error) {
     }
 
     if res2.TokenId == "" {
+        log.Println("Failed to get OpenAM token, response:", res.String())
         err = errors.New("Failed to get OpenAM token")
         return "", err
     }

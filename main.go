@@ -5,8 +5,6 @@ import (
 	"changeme/lib/state"
 	"changeme/lib/storage"
 	"embed"
-	"fmt"
-	"time"
 
 	"log"
 
@@ -27,44 +25,15 @@ func initialize() {
 	}
 	defer s.Close()
 
-	Service := &meijo.Service{}
-
-	// check if OpenAM token is already stored
-	token, err := s.GetEncryptedStorage("OpenAMToken")
-	if err == nil && token != "" {
-		log.Println("OpenAM token found in storage, setting state")
-		state.AppState.SetOpenAMToken(token)
-		state.AppState.SetAppInitialized(true)
-		Service.CampusmateSignIn()
-		Service.GetSchedule()
-		schedule, _ := Service.GetScheduleFromStorage(1)
-		log.Printf("Schedule from storage: %+v", schedule)
-		return
-	}
-
 	userId, _ := s.GetEncryptedStorage("OpenAMId")
 	password, _ := s.GetEncryptedStorage("OpenAMPassword")
 
-
-	if userId != "" && password != "" {
-		token, err := Service.OpenAMSignIn(userId, password)
-		if err != nil {
-			log.Printf("Failed to sign in to OpenAM: %v", err)
-		}
-
-		state.AppState.SetOpenAMToken(token)
+	if err == nil && userId != "" && password != "" {
+		log.Println("OpenAM token found in storage, setting state")
 		state.AppState.SetOpenAMUserId(userId)
 		state.AppState.SetOpenAMPassword(password)
-		state.AppState.SetOpenAMTokenExpireTime(int(time.Now().Unix() + 3600))
-		
-		// cache token to storage
-		if _, err := s.StoreEncryptedStorage("OpenAMToken", token); err != nil {
-			log.Printf("Failed to store OpenAM token: %v", err)
-		}
-		time := time.Now().Unix()
-		if _, err := s.StoreEncryptedStorage("OpenAMTokenExpireTime", fmt.Sprint(time + 3600)); err != nil {
-			log.Printf("Failed to store OpenAM token expire time: %v", err)
-		}
+		state.AppState.SetAppInitialized(true)
+		return
 	}
 
 	state.AppState.SetAppInitialized(true)
@@ -101,10 +70,12 @@ func main() {
 		BackgroundColour: application.NewRGB(6, 7, 15),
 		URL:              "/",
 	})
-
-	go func() {
-		meijo.RunPrintServer()
-	}()
+	
+	if application.System.IsPlatform(application.PlatformWindows) {
+		go func() {
+			meijo.RunPrintServer()
+		}()
+	}
 
 	go func() {
 		initialize()

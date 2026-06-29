@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { WML } from "@wailsio/runtime";
-import { OpenAMSignIn } from "../../bindings/changeme/lib/meijo/service";
+import {
+  OpenAMSignIn,
+  GetSchedule,
+  SaveScheduleToStorage,
+} from "../../bindings/changeme/lib/meijo/service";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import {
@@ -21,8 +25,9 @@ function App() {
       return;
     }
     OpenAMSignIn(userId, password)
-      .then(() => {
+      .then(async (token) => {
         console.log("Login successful");
+        SaveScheduleToStorage(await GetSchedule());
         window.location.href = "/#/home";
       })
       .catch((err) => {

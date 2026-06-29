@@ -3,6 +3,7 @@ package meijo
 import (
 	"changeme/lib/state"
 	"changeme/lib/storage"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
@@ -41,6 +42,7 @@ func (s *Service) CampusmateSignIn() {
 }
 
 func (s *Service) GetSchedule() ([]ScheduleEntry, error) {
+	s.CampusmateSignIn()
 	return client.GetSchedule()
 }
 
@@ -80,7 +82,7 @@ func (s *Service) GetScheduleFromStorage(day int) ([]ScheduleEntry, error) {
 		query = "SELECT class_name, class_code, class_time, class_day, class_room, class_teacher FROM class_data"
 	}
 
-	rows, err := st.SqlExec(query, day)
+	rows, err := st.SqlQuery(query, day)
 
 	if err != nil {
 		log.Printf("Error executing query: %v", err)
@@ -117,6 +119,22 @@ func (s *Service) OpenAMSignIn(userId string, password string) (string, error) {
 		Name:  "iPlanetDirectoryPro",
 		Value: token,
 	}})
+
+	state.AppState.SetOpenAMToken(token)
+	state.AppState.SetOpenAMUserId(userId)
+	state.AppState.SetOpenAMPassword(password)
+	state.AppState.SetOpenAMTokenExpireTime(int(time.Now().Unix() + 3600))
+
+	st, err := storage.NewStorage()
+	if err != nil {
+		return "", err
+	}
+	defer st.Close()
+
+	st.StoreEncryptedStorage("OpenAMToken", token)
+	st.StoreEncryptedStorage("OpenAMUserId", userId)
+	st.StoreEncryptedStorage("OpenAMPassword", password)
+	st.StoreEncryptedStorage("OpenAMTokenExpireTime", fmt.Sprint(time.Now().Unix() + 3600))
 	return token, nil
 }
 

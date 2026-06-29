@@ -43,6 +43,13 @@ export default function ClassListWidget(props: {
             active={true}
           />
         ))}
+        {props.schedule.length == 0 && (
+          <>
+            <div className="text-center text-gray-500 py-4">
+              登録されている授業はありません
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

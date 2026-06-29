@@ -107,7 +107,7 @@ func (s *Storage) initDb() error {
 	return nil
 }
 
-func (s *Storage) SqlExec(query string, args ...interface{}) (*sql.Rows, error) {
+func (s *Storage) SqlQuery(query string, args ...interface{}) (*sql.Rows, error) {
 	if s.conn == nil {
 		return nil, errors.New("database connection is not initialized")
 	}
@@ -116,6 +116,17 @@ func (s *Storage) SqlExec(query string, args ...interface{}) (*sql.Rows, error) 
 		return nil, err
 	}
 
+	return res, nil
+}
+
+func (s *Storage) SqlExec(query string, args ...interface{}) (sql.Result, error) {
+	if s.conn == nil {
+		return nil, errors.New("database connection is not initialized")
+	}
+	res, err := s.conn.Exec(query, args...)
+	if err != nil {
+		return nil, err
+	}
 	return res, nil
 }
 
