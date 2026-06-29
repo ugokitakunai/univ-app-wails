@@ -6,7 +6,7 @@ import { GetBestTextColorForAccent } from "../../../bindings/changeme/lib/settin
 import { IconRefresh } from "@tabler/icons-react";
 
 export function PCRoomWidget(props: { accentColor?: string }) {
-  let [pCRoomData, setPCRoomData] = useState<PCRoomStatus[]>([]);
+  let [pcRoomData, setPCRoomData] = useState<PCRoomStatus[]>([]);
   let [textColor, setTextColor] = useState("#000000");
   async function refreshPCRoomData() {
     let campus = "tempaku"; // Default campus
@@ -18,6 +18,8 @@ export function PCRoomWidget(props: { accentColor?: string }) {
   }
 
   useEffect(() => {
+    refreshPCRoomData;
+    pcRoomData;
     async function GetTextColorForAccent(accentColor: string) {
       await GetBestTextColorForAccent(accentColor).then((charColor) => {
         setTextColor(charColor);
