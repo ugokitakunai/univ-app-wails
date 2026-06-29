@@ -3,7 +3,7 @@ import { GetScheduleFromStorage } from "../../../bindings/changeme/lib/meijo/ser
 import { ScheduleEntry } from "../../../bindings/changeme/lib/meijo";
 import { ListHeader } from "../../components/ListHeader";
 
-export function ClassTable(props: { accentColor?: string }) {
+export function ClassTable(props: { accentColor?: string; backPage?: string }) {
   let [schedule, setSchedule] = useState<ScheduleEntry[]>([]);
   useEffect(() => {
     async function fetchSchedule() {
@@ -20,7 +20,10 @@ export function ClassTable(props: { accentColor?: string }) {
   }, []);
   return (
     <div>
-      <ListHeader accentColor={props.accentColor || "#C0ECE2"}>
+      <ListHeader
+        accentColor={props.accentColor || "#C0ECE2"}
+        backPage={props.backPage || undefined}
+      >
         <div className="flex justify-between items-center w-full">
           <div className="flex items-center gap-3">
             <div>授業一覧</div>

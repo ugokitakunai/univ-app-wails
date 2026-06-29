@@ -10,7 +10,7 @@ export function ClassTablePage() {
       accentColor="#C0ECE2"
     >
       <div>
-        <ClassTable accentColor="#C0ECE2"></ClassTable>
+        <ClassTable accentColor="#C0ECE2" backPage="/home"></ClassTable>
       </div>
     </SidebarLayout>
   );
